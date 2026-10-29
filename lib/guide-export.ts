@@ -22,7 +22,19 @@ export function guideMarkdown(guide: Guide): string {
           }`,
       )
       .join("\n\n")}`,
-    `## When you're blocked\n${guide.blockers.map((b) => `### ${b.title}\n${b.detail}\n\nNext: ${b.resolution}\nSources: ${b.sourceIds.map(id => guide.sources.find(source => source.id === id)?.url).filter(Boolean).join(', ') || 'Not verified'}`).join("\n\n")}`,
+    `## When you're blocked\n${guide.blockers
+      .map(
+        (b) =>
+          `### ${b.title}\n${b.detail}\n\nNext: ${b.resolution}\nSources: ${
+            b.sourceIds
+              .map(
+                (id) => guide.sources.find((source) => source.id === id)?.url,
+              )
+              .filter(Boolean)
+              .join(", ") || "Not verified"
+          }`,
+      )
+      .join("\n\n")}`,
     `## Agent can help\n${guide.agentCan.map((s) => `- ${s}`).join("\n")}`,
     `## You take over\n${guide.humanMust.map((s) => `- ${s}`).join("\n")}`,
     `## Evidence\n${guide.sources.map((s) => `- [${s.title}](${s.url}) — checked ${s.checkedAt}`).join("\n")}`,

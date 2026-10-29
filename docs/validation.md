@@ -63,3 +63,11 @@ No authenticated console form, consent grant, token exchange/refresh, production
 ## Evidence handling
 
 Source review, public-entry checks, planning estimates, and completed authenticated tests are separate categories. A checked source supports only the associated claim, not the entire launch. New generated guides should retain unknowns when primary evidence is absent, and a failed fetch should be shown as a research limitation rather than a provider requirement.
+
+## Working-experience checks
+
+On 29 October 2026, the actual local Worker returned a live Notion source scan with four sources and a Linear scan with one source. The first Worker test exposed an unsupported fetch redirect option in DNS preflight; switching to explicit manual redirects corrected it. These checks establish live retrieval, not model synthesis or provider registration.
+
+Browser checks in the narrow in-app preview covered provider selection, Slack’s Evidence tab, saving a checklist item and retaining it on reload, a live Linear investigation outside the curated library, and copying the generated share link. A Unicode share-link round trip is covered by automated tests. Full desktop and accessibility audits have not been completed.
+
+The final automated check passed 24 tests and TypeScript checking; the production build completed. The OpenAI branch still needs a real-key end-to-end test before submission.

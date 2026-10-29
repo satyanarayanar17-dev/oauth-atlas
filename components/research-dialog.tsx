@@ -162,7 +162,7 @@ export default function ResearchDialog({
           <div className="research-working" role="status">
             <LoaderCircle size={19} className="spin" />
             <div>
-              <strong>Investigating official sources…</strong>
+              <strong>Investigating public sources…</strong>
               <span>
                 Checking public documentation. No accounts are created.
               </span>

@@ -1,5 +1,9 @@
 # OAuth Atlas
 
+[Hosted preview](https://oauth-atlas-fieldguide.satyanarayanareddy-j.chatgpt.site) · [Source repository](https://github.com/satyanarayanar17-dev/oauth-atlas)
+
+Both are private to the owner for this first build. Reviewer access must be enabled before submission.
+
 A focused slice of the APM Integrations take-home: three researched OAuth launch guides, an investigation flow for another app, and shareable results. The guides separate registration work, provider waiting, scope decisions, and the point where a developer must take over.
 
 ## Run locally
@@ -58,3 +62,5 @@ The tests cover source retrieval boundaries, documentation discovery, guide/sour
 React and TypeScript run on the supplied Vinext/Cloudflare Worker starter. There is no database. The scope is deliberately small enough to inspect: three different launch problems, rather than one hundred repetitive placeholders. See [product decisions](docs/product-decisions.md), [validation](docs/validation.md), and the [three-minute demo](docs/demo-script.md).
 
 Public fetches can fail on browser-only docs or sign-in. Model citations are checked against retrieved URLs, but that does not prove every interpretation. Effort estimates are not measured setup results. Policies are a snapshot dated 29 October 2026. Browser storage, URL sharing, and the per-isolate request guard are take-home choices, not a production persistence or abuse-control system.
+
+The source fetcher checks public DNS and blocks private addresses, redirects, and oversized pages. DNS resolution cannot pin the later fetch address, so a production deployment still needs an egress boundary that prevents DNS rebinding.

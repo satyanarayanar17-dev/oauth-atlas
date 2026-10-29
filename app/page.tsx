@@ -33,6 +33,7 @@ export default function Home() {
   const [toast, setToast] = useState("");
   const [trace, setTrace] = useState<ResearchTrace[]>([]);
   const [traceOpen, setTraceOpen] = useState(false);
+  const [traceGuideId, setTraceGuideId] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const about = useRef<HTMLDialogElement>(null);
   const search = useRef<HTMLInputElement>(null);
@@ -113,6 +114,7 @@ export default function Home() {
     setFilter("All guides");
     setQuery("");
     setTrace(researchTrace);
+    setTraceGuideId(guide.id);
     setTraceOpen(true);
     try {
       localStorage.setItem(
@@ -321,7 +323,7 @@ export default function Home() {
             </div>
           </aside>
           <div className="guide-column">
-            {trace.length > 0 && currentGuide.generated && (
+            {trace.length > 0 && currentGuide.id === traceGuideId && (
               <div className="research-receipt">
                 <button onClick={() => setTraceOpen(!traceOpen)}>
                   <span>

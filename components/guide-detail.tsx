@@ -56,7 +56,7 @@ export default function GuideDetail({
   const [copying, setCopying] = useState(false);
 
   useEffect(() => {
-    setTab("overview");
+    setTab(guide.researchMode === "source-scan" ? "setup" : "overview");
     try {
       const stored = JSON.parse(
         localStorage.getItem(`atlas-progress:${guide.id}`) || "[]",

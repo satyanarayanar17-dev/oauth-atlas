@@ -640,7 +640,7 @@ main {
 }
 .guide-summary {
   font-size: 13px;
-  color: #7c8774;
+  color: #64725c;
   line-height: 1.85;
   max-width: 680px;
   margin: 20px 0 11px;
@@ -820,7 +820,7 @@ main {
 }
 .scope-section > p {
   font-size: 11px;
-  color: #8a947f;
+  color: #65745b;
   margin: 10px 0 12px;
   line-height: 1.85;
 }
@@ -851,7 +851,7 @@ main {
   font-size: 10px;
   line-height: 1.8;
   gap: 7px;
-  color: #8a947e;
+  color: #65745b;
 }
 .prerequisite-list svg {
   margin-top: 3px;
@@ -884,7 +884,7 @@ main {
   line-height: 1.8;
   position: relative;
   padding-left: 10px;
-  color: #8b957f;
+  color: #65745b;
 }
 .handoff-grid li:before {
   content: "·";
@@ -1056,7 +1056,7 @@ main {
 }
 .setup-step p {
   font-size: 11px;
-  color: #87927b;
+  color: #65745b;
   line-height: 1.9;
   margin-top: 7px;
 }
@@ -1134,7 +1134,7 @@ main {
 }
 .blocker p {
   font-size: 11px;
-  color: #8a957e;
+  color: #65745b;
   margin-top: 9px;
   line-height: 1.9;
 }
@@ -1196,7 +1196,7 @@ main {
 .validation-grid li {
   font-size: 10px;
   line-height: 1.85;
-  color: #8d9881;
+  color: #65745b;
 }
 .sources-heading {
   display: flex;
@@ -1359,7 +1359,7 @@ main {
 }
 .modal-lede {
   font-size: 12px;
-  color: #8b987e;
+  color: #68785d;
   line-height: 1.9;
   margin-top: 15px;
 }
@@ -1512,7 +1512,7 @@ textarea::placeholder {
 .concept-steps p {
   font-size: 11px;
   line-height: 1.9;
-  color: #92a084;
+  color: #68785d;
   margin-top: 5px;
 }
 .managed-note {

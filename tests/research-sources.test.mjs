@@ -222,6 +222,15 @@ test("DNS failures fail closed instead of skipping the check", async () => {
   );
 });
 
+test('DNS resolver uses manual redirects supported by the Worker runtime', async()=>{
+  const fetcher = async (_input, options) => {
+    assert.equal(options.redirect, 'manual');
+    return Response.json({Status:0, Answer:[{type:1,data:'1.1.1.1'}]});
+  };
+  await assertPublicDns('provider.com', fetcher);
+  await assert.rejects(assertPublicDns('provider.com',async()=>new Response(null,{status:302,headers:{location:'https://elsewhere.com'}})),/could not be verified/);
+});
+
 test("DNS preflight permits only publicly resolved names", async () => {
   await assertPublicDns("provider.com", async (input) =>
     Response.json({

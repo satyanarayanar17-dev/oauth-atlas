@@ -191,6 +191,7 @@ export async function scanSources(query: string): Promise<ScanResult> {
     seen.add(url);
     try {
       const page = await fetchPage(url);
+      seen.add(page.url);
       if (!pages.some((previous) => previous.url === page.url))
         pages.push(page);
       trace.push({
@@ -201,7 +202,7 @@ export async function scanSources(query: string): Promise<ScanResult> {
     } catch (error) {
       trace.push({
         label: "Source unavailable",
-        detail: `${url} — ${error instanceof Error && error.name === "ResearchError" ? error.message : `The provider could not be reached (${error instanceof Error ? `${error.name}: ${error.message}`.slice(0, 220) : 'network error'}).`}`,
+        detail: `${url} — ${error instanceof Error && error.name === "ResearchError" ? error.message : `The provider could not be reached (${error instanceof Error ? `${error.name}: ${error.message}`.slice(0, 220) : "network error"}).`}`,
         status: "warning",
       });
     }
@@ -221,12 +222,12 @@ export async function scanSources(query: string): Promise<ScanResult> {
   }
   if (!pages.length)
     throw new ResearchError(
-      `No readable public documentation was retrieved. ${trace.filter(item => item.label === 'Source unavailable').map(item => item.detail).slice(0, 2).join(' ')} Try a direct OAuth documentation URL.`,
+      `No readable public documentation was retrieved. ${trace
+        .filter((item) => item.label === "Source unavailable")
+        .map((item) => item.detail)
+        .slice(0, 2)
+        .join(" ")} Try a direct OAuth documentation URL.`,
     );
-  if (!provider && pages[0].title && !pages[0].title.includes(domain)) {
-    const titleName = pages[0].title.split(/\s[-|–—]\s/)[0].trim();
-    if (titleName.length < 45) name = titleName;
-  }
   trace.push({
     label: "Evidence boundary",
     detail:
