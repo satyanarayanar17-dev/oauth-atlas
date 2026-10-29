@@ -1,0 +1,3 @@
+# Optional. Without a model key, research returns an honest live source scan.
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4.1
