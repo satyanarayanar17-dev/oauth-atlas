@@ -71,3 +71,5 @@ On 29 October 2026, the actual local Worker returned a live Notion source scan w
 Browser checks in the narrow in-app preview covered provider selection, Slack’s Evidence tab, saving a checklist item and retaining it on reload, a live Linear investigation outside the curated library, and copying the generated share link. A Unicode share-link round trip is covered by automated tests. Full desktop and accessibility audits have not been completed.
 
 The final automated check passed 24 tests and TypeScript checking; the production build completed. The OpenAI branch still needs a real-key end-to-end test before submission.
+
+After publication, the public site and research configuration returned HTTP 200 without sign-in. A hosted Linear investigation also returned HTTP 200 with a retrieved official source. Public browser rendering was checked. Full model synthesis remains untested.

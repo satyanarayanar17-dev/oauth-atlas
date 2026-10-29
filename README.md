@@ -2,7 +2,7 @@
 
 [Hosted preview](https://oauth-atlas-fieldguide.satyanarayanareddy-j.chatgpt.site) · [Source repository](https://github.com/satyanarayanar17-dev/oauth-atlas)
 
-Both are private to the owner for this first build. Reviewer access must be enabled before submission.
+Both links are public. Live research currently uses the key-free source scan; full agent synthesis still needs a model key and an end-to-end test.
 
 A focused slice of the APM Integrations take-home: three researched OAuth launch guides, an investigation flow for another app, and shareable results. The guides separate registration work, provider waiting, scope decisions, and the point where a developer must take over.
 
