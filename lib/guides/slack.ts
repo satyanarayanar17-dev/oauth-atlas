@@ -56,7 +56,7 @@ export const slackGuide: Guide = {
       id: "readiness",
       title: "Check commercial eligibility early",
       detail:
-        "Maintain at least 10 installations on active workspaces throughout review. Check the full submission criteria: an MCP server alone, without meaningful in-Slack functionality, is unsuitable for Marketplace.",
+        "Maintain at least 10 installations on active workspaces throughout review, and check the weekly-active-user criterion in the current guidelines (10 weekly active users). An MCP server alone, without meaningful in-Slack functionality, is unsuitable for Marketplace. For model-based features, review the model and data-handling disclosures in the guidelines.",
       owner: "developer",
       evidence: "documented",
       sourceIds: ["installs", "guidelines"],
@@ -97,7 +97,7 @@ export const slackGuide: Guide = {
       detail:
         "The current requirement is 10 active workspace installations maintained throughout review.",
       resolution:
-        "Recruit and retain real pilot customers before submitting. Check the additional usage criteria in the guidelines.",
+        "Recruit and retain real pilot customers before submitting. Check the usage criterion of 10 weekly active users as well as the installation count, and confirm eligibility against the full current guidelines.",
       sourceIds: ["installs", "guidelines"],
     },
     {

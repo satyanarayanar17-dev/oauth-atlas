@@ -28,7 +28,7 @@ These are three kinds of friction, not a simplistic easy/medium/hard ranking. Ea
 
 ## Evidence and agent boundaries
 
-The library uses a shared `Guide` type with source IDs attached to steps and blockers. Requirements use primary sources and a checked date. Work estimates remain estimates. Validation notes state exactly what was inspected and what stopped at authentication.
+The library uses a shared `Guide` type with source IDs attached to steps and blockers. Requirements use primary sources and a checked date. Work estimates remain estimates. Validation notes distinguish source inspection, public entry checks, and the authenticated GitHub connection test.
 
 Agents are useful for finding official documentation, comparing dated policies, mapping actions to scopes, checking public entry points, and drafting review material. People retain account ownership, authentication, consent, secret handling, factual privacy representations, and provider submissions. Providers control review outcomes. The experience must expose these handoffs rather than pretending to automate them away.
 
@@ -44,7 +44,7 @@ One assembly repair is allowed if the reviewed guide fails validation. Quota, in
 
 ## Keeping the code understandable
 
-The implementation uses ordinary TypeScript data, a shared guide schema, small research modules, and a simple interface. Provider-specific guidance stays beside its sources instead of being buried in rendering code. Comments explain decisions where needed. The goal is code a reviewer can inspect and extend, not artificial signs of authorship.
+The implementation uses ordinary TypeScript data, a shared guide schema, small research modules, and a simple interface. Provider-specific guidance stays beside its sources instead of being buried in rendering code. Comments explain decisions where needed. The goal is a small codebase a reviewer can inspect and extend.
 
 ## A credible path to one hundred guides
 
@@ -54,4 +54,4 @@ The implementation uses ordinary TypeScript data, a shared guide schema, small r
 4. Store immutable guide revisions with stable share IDs. Keep personal checklist progress separate from the published guide, and show when a shared revision is out of date.
 5. Recheck sources on a schedule and on user reports. Prioritize review policies and scope tables; compare changes, flag contradictions, and require human review before silently changing launch-critical advice.
 
-Those are the next production steps, not capabilities claimed by this take-home. Current guidance is a dated snapshot. Private console details, real approvals, paid assessments, and provider-specific managed OAuth support remain outside the verified slice.
+Those are the next production steps, not capabilities claimed by this take-home. Current guidance is a dated snapshot. Private console details outside the GitHub sample, provider approvals, paid assessments, and provider-specific managed OAuth support remain outside the verified slice.

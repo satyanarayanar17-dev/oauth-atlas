@@ -1,39 +1,38 @@
-# Three-minute evaluator demo
+# Short evaluator demo
 
-Allow extra time if a provider or the model responds slowly. Do not disguise a source scan as model research.
+Allow about four minutes, including a live request. The latest recorded Calendly and Figma runs took 65.1 and 85.7 seconds; provider availability and model capacity can change that. The [validation log](validation.md) separates source checks, runtime behavior, and the authenticated GitHub test.
 
 ## Before presenting
 
-Use the [hosted experience](https://oauth-atlas-fieldguide.satya-tethala.workers.dev) for the full Workers AI investigation. Check `GET /api/research` or open the investigation dialog to confirm `agent` mode. No separate model key or provider credentials are needed. Configuration alone does not prove a successful run; keep the latest [validation log](validation.md) available.
+Use the [hosted experience](https://oauth-atlas-fieldguide.satya-tethala.workers.dev) for full investigation. The dialog should show the live research mode. Browsing and generation require no separate model key or provider credentials. Keep credentials out of the app description and shared guide.
 
-`npm run dev` reproduces the library and source-scan flow locally. It does not attach the production AI binding automatically. To publish your own complete investigator, sign in to Cloudflare and use `npm run deploy` as described in the README.
+`npm run dev` provides the library and source scans locally. The hosted model binding is attached by the deployment configuration described in the README. Configuration alone does not prove that a request will succeed.
 
-Keep the [validation log](validation.md) available. No provider account or credentials are required for the browsing demo.
+## 0:00–0:30 — Explain the pieces
 
-## 0:00–0:30 — Establish the problem
+Open **How it works**. Distinguish one provider app registration, the integration's OAuth callback/token handler, and each user's connection. Check the managed OAuth directory before assuming a developer needs their own registration; exact per-toolkit suitability still needs confirmation.
 
-Open **How it works**. Explain the three pieces: one provider registration, the integration's OAuth handler, and each user's separate connection. Point to the managed OAuth directory as an earlier option to check; do not claim managed support for a provider without checking its exact scheme.
+## 0:30–1:20 — Compare the library
 
-## 0:30–1:20 — Compare real launch paths
+- **GitHub:** registration is approachable; organization access is a separate gate and private repository reads deserve a GitHub App decision. Show the [authenticated public-profile check](evidence/github-connection.md): code exchange, identity, refresh, and refreshed identity returned 200; revocation returned 204. No repository scopes were requested.
+- **Slack:** compare pilot and commercial distribution. Show the ten-workspace policy, weekly-active-user criterion, meaningful in-Slack functionality, and review estimates.
+- **Google Drive:** compare selected-file access with broad read-only access and its restricted-scope obligations. Registration effort and provider waiting are separate estimates.
 
-Select **GitHub**. Show hands-on effort separately from the customer organization's approval gate. Note the private-code scope tradeoff.
+## 1:20–3:20 — Investigate another provider
 
-Select **Slack**. Show the pilot/commercial distinction, ten active workspace installations, and the provider's review estimates. Open the Evidence tab and the dated policy source. The older five-workspace assumption was corrected during research.
+Choose **Investigate a new app** and let the evaluator name a provider or supply its official documentation URL. The current library contains three guides; outside-library requests retrieve and generate new drafts.
 
-Select **Google Drive**. Explain why selected-file access and broad read-only access are different features with different review obligations. Show the restricted-scope source and the untested setup limits.
+Two recorded examples:
 
-## 1:20–2:20 — Investigate an app outside the library
+- App: `Calendly`. Intent: “External customers connect their own Calendly account so my agent can read scheduled events. Read endpoints only, without webhooks. Explain production setup and approval uncertainty.”
+- Website: `https://developers.figma.com/docs/rest-api/oauth-apps/`. Intent: “External customers connect their Figma account so my agent can read file JSON contents. No comments, writes, or dev resources. Explain public launch and draft/private audience restrictions.”
 
-Choose **Investigate a new app**. Let the evaluator supply a provider. `Calendly` is a name-based example that has completed production generation; Figma has also completed a website-based run. They are outside the three-guide library. Unfamiliar names use public metadata or a model-generated lead; use an official website or OAuth documentation URL if identity remains ambiguous.
+Inspect the research receipt, intended use, sources, minimal scopes, next actions, and unknown wait. For Figma and Calendly, open the Evidence section to show the dated editorial notes. Explain that these reviewed corrections apply only when the matching official document and policy markers were fetched; they are not fresh discoveries or a claim that every generated sentence was verified.
 
-For Calendly, use: “External customers connect their own accounts so my agent can read scheduled events. Explain public production setup.” Submit and inspect the research receipt. Allow time for document retrieval, drafting, and the second model review pass; handle a provider or model failure openly.
+For an unfamiliar provider without reviewed notes, inspect the primary sources before treating its eligibility or permissions as established. If identity or retrieval fails, try a direct official OAuth documentation URL and show the limitation. A source scan is identified as limited retrieval rather than a synthesized launch plan.
 
-- In **agent mode**, inspect the generated path and open a supporting source. Explain that a second model pass revises the draft against the retrieved documents. Human review is still needed even after that revision and structural/source-reference validation.
-- In **source-scan mode**, show the live retrieved excerpts and the explicit unknowns. Explain that this proves live retrieval and shareable evidence, not a complete agent investigation. The intended use is not synthesized in this mode.
-- If a site blocks retrieval, use its direct public documentation URL. Show the limitation rather than replacing it with invented requirements.
+## 3:20–4:00 — Share and hand off
 
-## 2:20–3:00 — Make it usable outside the demo
+Mark a checklist step and reload to show local progress. Copy a generated guide link into a fresh tab, then export Markdown. Check that intended use, source links, evidence limits, and ownership survive.
 
-Mark a checklist item, then reload to demonstrate local progress. Copy the share link and open it in a new tab; a generated guide is carried in the URL fragment. Export Markdown and inspect its source links, ownership, estimates, and not-verified section.
-
-Finish on the evidence limits: provider registration stopped at sign-in, provider authorization and approvals were not completed, and generated guidance still needs review against its sources. The next production work is reviewed guide revisions, durable sharing, source refreshes, and broader coverage. This slice contains three curated guides, not one hundred.
+Finish with the boundary: one GitHub public-profile OAuth connection was exercised and revoked. Other authenticated providers, broader permissions, and provider approvals remain untested. The app helps research and preparation; account owners handle authenticated setup, consent, secret storage, and required submissions. Generated drafts still need source review. The current automated suite has 68 passing tests plus TypeScript checks.

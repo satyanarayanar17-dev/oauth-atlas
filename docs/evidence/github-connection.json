@@ -1,0 +1,20 @@
+{
+  "provider": "GitHub",
+  "status": "completed",
+  "callback": "http://127.0.0.1:8788/callback",
+  "requestedScopes": [],
+  "startedAt": "2026-10-30T18:28:46.921Z",
+  "stage": "token_refresh",
+  "exchangeStatus": 200,
+  "grantedScopes": [],
+  "expiresIn": 28800,
+  "refreshIssued": true,
+  "identityStatus": 200,
+  "identityMatchesExpected": true,
+  "refreshStatus": 200,
+  "refreshedIdentityStatus": 200,
+  "refreshedIdentityMatchesExpected": true,
+  "revokeStatus": 204,
+  "testGrantRevoked": true,
+  "finishedAt": "2026-10-30T18:29:16.626Z"
+}

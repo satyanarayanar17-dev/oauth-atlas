@@ -45,7 +45,7 @@ curl https://oauth-atlas-fieldguide.satya-tethala.workers.dev/api/research \
 - **Evidence boundaries:** sources, action links, human handoffs, and validation notes are assembled on the server. Rules constrain added scope recommendations, turn unverified launch directives into clarification steps, and remove unrelated webhook blockers. These rules and the second model pass are not independent factual validation; generated guidance still needs human review. A model failure is shown as a failure in the Workers AI path, rather than silently presenting a source scan as a completed guide.
 - **Progress and sharing:** checklist progress and generated guides stay in browser storage. Curated guides have query links; generated snapshots travel as compressed JSON in the URL fragment. Markdown export provides a portable copy. Anyone receiving a share link can read its guide.
 
-Neither research mode creates provider apps, handles their secrets, grants consent, or completes approvals. No provider credentials are required for the demo. Keep credentials out of submitted app descriptions, guide content, and share links.
+Neither research mode creates provider apps, handles their secrets, grants consent, or completes approvals. No provider credentials are required for the browsing and guide-generation demo. Keep credentials out of submitted app descriptions, guide content, and share links.
 
 ## Check the code
 
@@ -55,12 +55,26 @@ npm run check
 npm run build
 ```
 
-Tests cover URL/DNS restrictions, retrieval and discovery failures, model response handling, evidence assembly, and sharing round trips. Mock model tests establish request and validation behavior, not live inference quality. See the [validation log](docs/validation.md), [captured production responses and review notes](docs/examples/README.md), [product decisions](docs/product-decisions.md), and [demo script](docs/demo-script.md).
+The current checks pass 70 automated tests and TypeScript validation. Tests cover URL/DNS restrictions, retrieval and discovery failures, model response handling, evidence assembly, and sharing round trips. Mock model tests establish request and validation behavior, not live inference quality. See the [validation log](docs/validation.md), [captured production responses and review notes](docs/examples/README.md), [product decisions](docs/product-decisions.md), and [demo script](docs/demo-script.md).
 
 ## Decisions and limitations
 
 React and TypeScript run on Vinext and a Cloudflare Worker. Provider guidance is ordinary data under `lib/guides/`; `lib/research/` separates discovery, fetching, inference, and guide assembly. There is no database. The slice prioritizes three different launch problems over one hundred placeholder guides.
 
-Curated provider policies were checked on 29 October 2026. Effort ranges are planning estimates, not measured setup times. Authenticated registration, token exchange, and provider approvals remain untested. Public sources can be inaccessible, stale, contradictory, or insufficient; citations and schema validation do not prove every generated interpretation.
+Curated policies were checked on 29–31 October 2026. A dedicated GitHub OAuth app was registered and tested with account-owner consent: public-profile code exchange, identity, token refresh, and grant revocation passed. The [sanitized report](docs/evidence/github-connection.json) contains no credentials. Other authenticated provider setups and provider approvals remain untested. Effort ranges are planning estimates; citations and schema validation do not prove every generated interpretation.
 
 Browser storage and URL snapshots are take-home persistence choices. Name discovery depends partly on public brand metadata and may need an official website to disambiguate an app. The per-isolate request guard is not durable abuse control. Public DNS checks block private addresses, but cannot pin the later fetch connection; production hardening should include an egress boundary against DNS rebinding.
+
+## Reproduce the GitHub connection check
+
+Use a **new dedicated test OAuth app**, with callback `http://127.0.0.1:8788/callback`. Keep its client ID, client secret, and expected login in a private JSON file outside the submission:
+
+```json
+{"clientId":"your-client-id","clientSecret":"your-client-secret","expectedLogin":"your-login"}
+```
+
+```sh
+node scripts/github-connection-check.mjs /path/to/private-config.json
+```
+
+Open [127.0.0.1:8788](http://127.0.0.1:8788). The script requests no extra scopes, uses state and S256 PKCE, checks identity, and tests refresh when issued. It then revokes that dedicated app's authorization for the test user, including its tokens. Do not use a production app for this check. The report beside the private config contains statuses only; delete the temporary credential file afterward.

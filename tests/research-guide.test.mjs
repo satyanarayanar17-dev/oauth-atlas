@@ -88,7 +88,8 @@ test("an unverified launch action stays behind an explicit readiness check", () 
 test("review cannot silently grow the requested scope list", () => {
   const raw = modelGuide();
   raw.recommendedScopes = ["content:read", "comments:write"];
-  const guide = assembleGuide(raw, scan, intent, pages, ["content:read"]);
+  const scopePages = [{ ...pages[0], text: "OAuth scope fixture: content:read and comments:write." }];
+  const guide = assembleGuide(raw, scan, intent, scopePages, ["content:read"]);
   assert.deepEqual(guide.recommendedScopes, ["content:read"]);
   assert.match(guide.scopeNote, /not been added automatically/);
   assert.ok(guide.validation.notChecked.some((item) => /disagreed on permissions/.test(item)));
@@ -118,6 +119,58 @@ test("response metadata leaked inside prose is rejected for repair", () => {
   const raw = modelGuide();
   raw.steps[0].detail = "Read the docs. 'owner': 'developer', 'sourceIds': ['s1']}";
   assert.throws(() => assembleGuide(raw, scan, intent, pages), ResearchError);
+});
+
+test("one malformed monitoring step is omitted without discarding useful setup instructions", () => {
+  const raw = modelGuide();
+  raw.steps.push({
+    title: "Monitor the connection",
+    detail: "Monitor errors. 'owner': 'developer', 'sourceIds': ['s404']}",
+    owner: "developer",
+    evidence: "unverified",
+    sourceIds: ["s404"],
+  });
+  const guide = assembleGuide(raw, scan, intent, pages);
+  assert.equal(guide.steps.length, 2);
+  assert.ok(!guide.steps.some((step) => /'owner'|'sourceIds'/.test(step.detail)));
+  assert.deepEqual(guide.steps.map((step) => step.id), ["step-1", "step-2"]);
+  assert.ok(guide.validation.notChecked.some((item) => /Omitted 1 malformed setup step and 0 malformed blockers/.test(item)));
+  assert.ok(!guide.validation.checked.some((item) => /omitted|monitoring verified/i.test(item)));
+});
+
+test("a blocker with response metadata is omitted and disclosed without exposing its text", () => {
+  const raw = modelGuide();
+  raw.blockers.push({
+    title: "Monitor callback errors",
+    detail: "Check the callback status.",
+    resolution: "Try this. \"evidence\": \"documented\", \"sourceIds\": [\"s404\"]}",
+    sourceIds: ["s404"],
+  });
+  const guide = assembleGuide(raw, scan, intent, pages);
+  assert.equal(guide.blockers.length, 1);
+  assert.ok(!JSON.stringify(guide.blockers).includes('\\"evidence\\"'));
+  assert.ok(guide.validation.notChecked.some((item) => /Omitted 0 malformed setup steps and 1 malformed blocker/.test(item)));
+});
+
+test("damaged critical fields still fail instead of being omitted or overwritten", () => {
+  for (const field of ["summary", "review", "scopeNote"]) {
+    const raw = modelGuide();
+    raw[field] = "Critical text. 'owner': 'developer'}";
+    raw.recommendedScopes = ["content:read"];
+    assert.throws(
+      () => assembleGuide(raw, scan, intent, pages, []),
+      (error) => error instanceof ResearchError && /response metadata/.test(error.message),
+    );
+  }
+});
+
+test("omitting a malformed step cannot turn one remaining instruction into a complete guide", () => {
+  const raw = modelGuide();
+  raw.steps[1].detail = "Continue. 'steps': []}";
+  assert.throws(
+    () => assembleGuide(raw, scan, intent, pages),
+    (error) => error instanceof ResearchError && /enough usable OAuth setup instructions/.test(error.message),
+  );
 });
 
 test("the research-only agent cannot assign itself authenticated setup work", () => {

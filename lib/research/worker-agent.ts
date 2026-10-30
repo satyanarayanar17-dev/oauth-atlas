@@ -2,6 +2,7 @@ import { guideSchema } from "../guide-schema.ts";
 import type { Guide, GuideStep, ResearchTrace } from "../types";
 import { runJson, type WorkersModel } from "./inference.ts";
 import { scanSources, type ScanResult } from "./scan.ts";
+import { applyReviewedNotes, checkGuideScopes } from "./reviewed-notes.ts";
 import {
   fetchPage,
   publicUrl,
@@ -11,6 +12,13 @@ import {
 
 const text = { type: "string" };
 const list = { type: "array", items: text };
+const leakedResponseProperty = /['"](?:sourceIds|owner|evidence|steps)['"]\s*:/;
+const damagedProseMessage = "The draft contained response metadata inside its prose. Rewrite those sentences as plain instructions without JSON keys or fragments.";
+
+function hasDamagedProse(values: unknown[]) {
+  return values.some((value) => typeof value === "string" && leakedResponseProperty.test(value));
+}
+
 const fields = {
   name: text,
   summary: text,
@@ -158,6 +166,24 @@ export function assembleGuide(
       "The research response was incomplete. Please try again.",
     );
   const data = raw as Record<string, unknown>;
+  if (hasDamagedProse([data.summary, data.review, data.scopeNote]))
+    throw new ResearchError(damagedProseMessage, 502);
+  let omittedSteps = 0;
+  let omittedBlockers = 0;
+  const draftSteps = Array.isArray(data.steps) ? data.steps.filter((value) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return true;
+    const step = value as Record<string, unknown>;
+    if (!hasDamagedProse([step.title, step.detail])) return true;
+    omittedSteps++;
+    return false;
+  }) : [];
+  const draftBlockers = Array.isArray(data.blockers) ? data.blockers.filter((value) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return true;
+    const blocker = value as Record<string, unknown>;
+    if (!hasDamagedProse([blocker.title, blocker.detail, blocker.resolution])) return true;
+    omittedBlockers++;
+    return false;
+  }) : data.blockers;
   const date = new Date().toISOString().slice(0, 10);
   const sources = pages.map((page, index) => ({
     id: `s${index + 1}`,
@@ -167,7 +193,7 @@ export function assembleGuide(
   }));
   const ids = new Set(sources.map((source) => source.id));
   const steps = Array.isArray(data.steps)
-    ? data.steps.map((value, index) => {
+    ? draftSteps.map((value, index) => {
         if (!value || typeof value !== "object" || Array.isArray(value)) {
           throw new ResearchError(
             "The research response contained an invalid setup step.",
@@ -237,11 +263,11 @@ export function assembleGuide(
       "Draft a scope-to-action map and callback checklist for the stated use case, with unknowns left visible.",
       "Prepare provider questions or a review checklist for the account owner to inspect.",
     ],
-    blockers: Array.isArray(data.blockers) ? data.blockers.filter((blocker) => {
+    blockers: Array.isArray(draftBlockers) ? draftBlockers.filter((blocker) => {
       const wantsWebhooks = /webhook/i.test(intent) &&
         !/(?:without|no|not using|don't use).{0,20}webhooks?/i.test(intent);
       return wantsWebhooks || !/webhook/i.test(String(blocker?.title));
-    }) : data.blockers,
+    }) : draftBlockers,
     humanMust: [
       "Sign in to the provider account, accept the relevant terms, and register the app under the correct owner.",
       "Configure the exact integration callback and keep any client secret in secure server-side storage.",
@@ -261,6 +287,7 @@ export function assembleGuide(
         "Provider registration, consent, token exchange, and completed approval were not attempted.",
         "Generated interpretations require review against the cited pages.",
         "Before external rollout, confirm the intended app type, scope eligibility, and any unresolved provider approval requirements.",
+        ...(omittedSteps || omittedBlockers ? [`Omitted ${omittedSteps} malformed setup ${omittedSteps === 1 ? "step" : "steps"} and ${omittedBlockers} malformed ${omittedBlockers === 1 ? "blocker" : "blockers"} containing response metadata; their content was not used.`] : []),
         ...(expandedPermissions ? ["The draft and model review disagreed on permissions. The initial scope list was retained for developer review."] : []),
         ...unknowns,
       ],
@@ -271,7 +298,7 @@ export function assembleGuide(
     issue.message === "Generated prose contains leaked response metadata",
   )) {
     throw new ResearchError(
-      "The draft contained response metadata inside its prose. Rewrite those sentences as plain instructions without JSON keys or fragments.",
+      damagedProseMessage,
       502,
     );
   }
@@ -280,11 +307,25 @@ export function assembleGuide(
       "The generated guide did not pass the content checks. Please try a direct OAuth documentation URL.",
       502,
     );
-  if (!parsed.data.steps.some((step) => step.evidence === "documented"))
+  const checkedGuide = applyReviewedNotes(
+    checkGuideScopes(parsed.data, pages, intent),
+    pages,
+    intent,
+  );
+  const checked = guideSchema.safeParse(checkedGuide);
+  if (!checked.success)
+    throw new ResearchError("The reviewed guide did not pass the content checks. Please retry.", 502);
+  const usefulSteps = checked.data.steps.filter((step) => step.title.trim() && step.detail.trim());
+  if (usefulSteps.length < 2)
+    throw new ResearchError(
+      "The draft did not contain enough usable OAuth setup instructions. Try a more specific documentation URL.",
+      502,
+    );
+  if (!usefulSteps.some((step) => step.evidence === "documented"))
     throw new ResearchError(
       "The retrieved sources did not support an actionable OAuth setup path. Try a more specific documentation URL.",
     );
-  return parsed.data;
+  return checked.data;
 }
 
 export async function investigateWithWorker(

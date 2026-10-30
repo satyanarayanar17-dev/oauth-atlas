@@ -15,8 +15,8 @@ export const githubGuide: Guide = {
   review:
     "The documented registration flow has no provider-wide approval stage. Customer organizations can independently restrict OAuth apps and require an owner to approve access.",
   scopeNote:
-    "Start with public information or read:user for profile access. The repo scope includes private repository writes; OAuth apps cannot request read-only source-code access. Prefer a GitHub App for selected repositories and finer permissions.",
-  recommendedScopes: ["read:user", "user:email (only if needed)"],
+    "Our public-profile validation requested no scopes and GitHub showed Public data only. Add read:user for additional profile fields or user:email only when the feature needs them. The repo scope includes private repository writes; assess a GitHub App for selected repositories and finer permissions.",
+  recommendedScopes: ["read:user (only for additional profile fields)", "user:email (only if needed)"],
   prerequisites: [
     "A GitHub account; organization-owned registration requires administrative access.",
     "An app name, public homepage, and working authorization callback URL.",
@@ -48,7 +48,7 @@ export const githubGuide: Guide = {
       title: "Connect the OAuth handler",
       detail:
         "Put the client ID and generated client secret in your server or integration platform. Use state and S256 PKCE. Current app registration enables expiring tokens by default, so confirm refresh support before the first test.",
-      owner: "agent",
+      owner: "developer",
       evidence: "documented",
       sourceIds: ["flow", "registration"],
     },
@@ -59,7 +59,7 @@ export const githubGuide: Guide = {
         "Sign in with a verified-email account, approve only required permissions, and call a harmless endpoint such as GET /user. Confirm the granted scopes and test your intended resource; a successful login does not establish organization access.",
       owner: "developer",
       evidence: "documented",
-      sourceIds: ["user-access", "flow", "scopes"],
+      sourceIds: ["user-access", "flow", "scopes", "connection-test"],
     },
     {
       id: "org-approval",
@@ -133,6 +133,12 @@ export const githubGuide: Guide = {
       checkedAt: "2026-10-29",
     },
     {
+      id: "connection-test",
+      title: "OAuth Atlas · Recorded GitHub connection test",
+      url: "https://github.com/satyanarayanar17-dev/oauth-atlas/blob/main/docs/evidence/github-connection.json",
+      checkedAt: "2026-10-30",
+    },
+    {
       id: "organization",
       title: "GitHub · Approving OAuth apps for an organization",
       url: "https://docs.github.com/en/organizations/managing-oauth-access-to-your-organizations-data/approving-oauth-apps-for-your-organization",
@@ -144,13 +150,16 @@ export const githubGuide: Guide = {
       "Read five current GitHub documentation pages covering registration, scopes, OAuth flow, and organization policy.",
       "Opened the registration URL without credentials: it redirected to GitHub sign-in with a return path to app registration.",
       "Confirmed current docs describe up to 10 callback URLs and expiring tokens enabled by default.",
+      "Registered a dedicated OAuth app under an authenticated account with wildcard matching off and token expiration enabled.",
+      "With the account owner's consent, completed a public-data-only S256 PKCE connection: code exchange, GET /user, token refresh, and a second identity check returned HTTP 200.",
+      "Revoked the dedicated test app's user grant (HTTP 204) and removed the temporary local credential file. The linked report contains no tokens or client secret.",
     ],
     notChecked: [
-      "Authenticated registration form, client-secret generation, user authorization, token exchange, and API access were not tested.",
+      "The successful test covered public-profile access only. Private profile fields, email scopes, repositories, and customer organization data were not tested.",
       "No organization approval was requested and no turnaround was measured.",
     ],
     correction:
-      "Older guides may assume one callback URL or non-expiring tokens. Current documentation describes multiple callbacks and an expiring-token default; the authenticated settings were not independently verified.",
+      "The authenticated registration form confirmed up to ten callback URLs, wildcard matching off, and expiring tokens enabled. A live public-profile test confirmed code exchange and refresh behavior; this does not establish organization access or production approval.",
   },
-  updatedAt: "2026-10-29",
+  updatedAt: "2026-10-30",
 };

@@ -54,8 +54,10 @@ export default function GuideDetail({
   const [tab, setTab] = useState("overview");
   const [completed, setCompleted] = useState<string[]>([]);
   const [copying, setCopying] = useState(false);
+  const [sharedLink, setSharedLink] = useState("");
 
   useEffect(() => {
+    setSharedLink("");
     setTab(guide.researchMode === "source-scan" ? "setup" : "overview");
     try {
       const stored = JSON.parse(
@@ -86,10 +88,16 @@ export default function GuideDetail({
   async function copyLink() {
     setCopying(true);
     try {
-      await navigator.clipboard.writeText(await shareUrl(guide));
-      onToast("Guide link copied. Your checklist stays private.");
+      const url = await shareUrl(guide);
+      setSharedLink(url);
+      try {
+        await navigator.clipboard.writeText(url);
+        onToast("Guide link copied. Your checklist stays private.");
+      } catch {
+        onToast("Select the guide link below to copy it. Your checklist stays private.");
+      }
     } catch {
-      onToast("Could not copy a link. Use Export to save the full guide.");
+      onToast("Could not create a share link. Use Export to save the full guide.");
     } finally {
       setCopying(false);
     }
@@ -151,6 +159,18 @@ export default function GuideDetail({
           </button>
         </div>
       </div>
+      {sharedLink && (
+        <div className="share-link-field">
+          <label htmlFor="shared-guide-url">Share this guide</label>
+          <input
+            id="shared-guide-url"
+            value={sharedLink}
+            readOnly
+            onFocus={(event) => event.currentTarget.select()}
+          />
+          <a href={sharedLink} target="_blank" rel="noreferrer">Open shared guide</a>
+        </div>
+      )}
       <div className="guide-heading">
         <ProviderMark id={guide.id} />
         <div>

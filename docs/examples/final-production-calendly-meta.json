@@ -1,0 +1,12 @@
+{
+  "request": {
+    "query": "Calendly",
+    "intent": "External customers connect their own Calendly account so my SaaS agent can read scheduled events. Read endpoints only, without webhooks. Explain the production setup and any approval uncertainty."
+  },
+  "status": 200,
+  "seconds": 65.1,
+  "version": "ea6995c9-bf49-45d5-ba93-f6aaf4f35de3",
+  "sources": 5,
+  "steps": 4,
+  "error": null
+}

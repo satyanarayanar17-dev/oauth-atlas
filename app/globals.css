@@ -543,6 +543,27 @@ main {
   gap: 16px;
   align-items: center;
 }
+.share-link-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: -12px 0 24px;
+  font-size: 11px;
+  color: var(--green);
+}
+.share-link-field input {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: white;
+  font: inherit;
+}
+.share-link-field a {
+  text-decoration: underline;
+}
 .quiet-button {
   font-size: 10px;
   display: flex;
