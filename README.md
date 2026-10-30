@@ -4,7 +4,7 @@
 
 A focused slice of the APM Integrations take-home: three researched OAuth launch guides, live investigation for another app, and shareable results. Each guide separates registration work, provider waiting, scope decisions, blockers, and the point where a developer must take over.
 
-The hosted app uses Cloudflare Workers AI without a separate OpenAI key. Production requests have generated structured drafts for Calendly and Figma; these require human review and do not represent completed provider setups. See [validation](docs/validation.md) for observed runs and remaining quality checks.
+The hosted app uses a Cloudflare model binding without a separate API key. Production requests have generated structured drafts for Calendly and Figma; these require human review and do not represent completed provider setups. See [validation](docs/validation.md) for observed runs and remaining quality checks.
 
 ## Run locally
 
@@ -28,7 +28,7 @@ npm run deploy
 
 The investigator uses `@cf/meta/llama-3.3-70b-instruct-fp8-fast` through `env.AI.run()`. There is no model API key to copy into the app. Cloudflare's free allocation is finite; quota, capacity, and model failures return explicit errors. Local development does not attach this production binding automatically. [Workers AI setup](https://developers.cloudflare.com/workers-ai/get-started/workers-wrangler/), [usage limits and pricing](https://developers.cloudflare.com/workers-ai/platform/pricing/).
 
-Check the selected runtime mode with `GET /api/research`. A response of `agent` means an AI binding or optional model key is configured; it is not a health check or proof that generation will succeed.
+Check the selected runtime mode with `GET /api/research`. A response of `agent` means the model binding is configured; it is not a health check or proof that generation will succeed.
 
 To run an investigation directly:
 
@@ -59,10 +59,8 @@ Tests cover URL/DNS restrictions, retrieval and discovery failures, model respon
 
 ## Decisions and limitations
 
-React and TypeScript run on a Vinext/Cloudflare Worker starter. Provider guidance is ordinary data under `lib/guides/`; `lib/research/` separates discovery, fetching, inference, and guide assembly. There is no database. The slice prioritizes three different launch problems over one hundred placeholder guides.
+React and TypeScript run on Vinext and a Cloudflare Worker. Provider guidance is ordinary data under `lib/guides/`; `lib/research/` separates discovery, fetching, inference, and guide assembly. There is no database. The slice prioritizes three different launch problems over one hundred placeholder guides.
 
 Curated provider policies were checked on 29 October 2026. Effort ranges are planning estimates, not measured setup times. Authenticated registration, token exchange, and provider approvals remain untested. Public sources can be inaccessible, stale, contradictory, or insufficient; citations and schema validation do not prove every generated interpretation.
 
 Browser storage and URL snapshots are take-home persistence choices. Name discovery depends partly on public brand metadata and may need an official website to disambiguate an app. The per-isolate request guard is not durable abuse control. Public DNS checks block private addresses, but cannot pin the later fetch connection; production hardening should include an egress boundary against DNS rebinding.
-
-An optional legacy OpenAI Responses/web-search path remains available through server-side `OPENAI_API_KEY` and `OPENAI_MODEL` settings when no Workers AI binding is present. It is not required by the hosted demo and has not been tested with a real OpenAI key.

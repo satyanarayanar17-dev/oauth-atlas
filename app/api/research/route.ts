@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { investigate } from "@/lib/research/agent";
+import { scanSources } from "@/lib/research/scan";
 import { investigateWithWorker } from "@/lib/research/worker-agent";
 import type { WorkersModel } from "@/lib/research/inference";
 import { publicUrl, ResearchError } from "@/lib/research/sources";
@@ -14,21 +14,14 @@ const recentRequests = new Map<string, number[]>();
 
 function config() {
   const vars = env as unknown as Record<string, unknown>;
-  return {
-    ai:
-      vars.AI && typeof (vars.AI as WorkersModel).run === "function"
-        ? (vars.AI as WorkersModel)
-        : undefined,
-    apiKey:
-      typeof vars.OPENAI_API_KEY === "string" ? vars.OPENAI_API_KEY : undefined,
-    model:
-      typeof vars.OPENAI_MODEL === "string" ? vars.OPENAI_MODEL : undefined,
-  };
+  return vars.AI && typeof (vars.AI as WorkersModel).run === "function"
+    ? (vars.AI as WorkersModel)
+    : undefined;
 }
 
 export async function GET() {
   return Response.json(
-    { mode: config().ai || config().apiKey ? "agent" : "source-scan" },
+    { mode: config() ? "agent" : "source-scan" },
     { headers },
   );
 }
@@ -94,9 +87,9 @@ export async function POST(request: Request) {
     if (/^[a-z]+:\/\//i.test(query)) publicUrl(query);
     recentRequests.set(client, [...attempts, now]);
     const runtime = config();
-    const result = runtime.ai
-      ? await investigateWithWorker(query, intent, runtime.ai)
-      : await investigate(query, intent, runtime);
+    const result = runtime
+      ? await investigateWithWorker(query, intent, runtime)
+      : await scanSources(query);
     return Response.json(
       { guide: result.guide, trace: result.trace },
       { headers },

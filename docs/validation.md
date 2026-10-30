@@ -70,7 +70,7 @@ On 29 October 2026, the actual local Worker returned a live Notion source scan w
 
 Browser checks in the narrow in-app preview covered provider selection, Slack’s Evidence tab, saving a checklist item and retaining it on reload, a live Linear investigation outside the curated library, and copying the generated share link. A Unicode share-link round trip is covered by automated tests. Full desktop and accessibility audits have not been completed.
 
-At that stage, 24 automated tests and TypeScript checking passed, and the production build completed. Later tests add inference and guide-assembly coverage. The optional OpenAI branch has not been exercised with a real key; it is no longer required by the hosted deployment.
+At that stage, 24 automated tests and TypeScript checking passed, and the production build completed. Later tests add inference and guide-assembly coverage.
 
 After the initial publication, the public site and research configuration returned HTTP 200 without sign-in. A hosted Linear investigation also returned HTTP 200 with a retrieved official source. Public browser rendering was checked. That deployment ran source scans rather than full model synthesis.
 
@@ -133,3 +133,9 @@ This check confirmed complete generation after the PKCE, negated-webhook, and pr
 The final suite passes **50 automated tests**, TypeScript checking, and the production build. The UI labels generated citations as “Source cited · review interpretation.” Public generation and sharing were exercised; the later ownership projection is covered by automated and recorded-response checks. This is still a draft research assistant, not a completed provider setup or an independent factual verifier.
 
 The standard PKCE correction follows [RFC 7636 sections 4.3–4.5](https://www.rfc-editor.org/rfc/rfc7636): the challenge goes to the authorization endpoint, while the verifier belongs in the token request. The correction does not claim that a token exchange was run. No secrets were found by the submission's basic credential-pattern check; ignored local credentials and build output are excluded from the repository.
+
+## Deployment cleanup
+
+Unused preview authentication, connector services, hosting wrappers, and a legacy unconfigured backend were removed. Development and builds now use the normal framework commands, and the Worker delegates directly to the application handler. The model binding and limited local source-scan mode remain documented.
+
+All 50 automated tests, TypeScript checks, and the production build passed after this cleanup. Local browsing and a Linear source scan returned HTTP 200. On deployed version `84a70386-772a-4fe8-8cbc-e810ffe89e38`, the public homepage and research configuration returned HTTP 200, and a fresh Linear investigation returned an agent guide with four retrieved sources and six steps in 60.7 seconds. This is a runtime check, not independent validation of every generated interpretation.

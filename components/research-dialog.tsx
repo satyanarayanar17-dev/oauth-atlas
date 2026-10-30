@@ -142,7 +142,7 @@ export default function ResearchDialog({
           </strong>
           <span>
             {mode === "agent"
-              ? "AI synthesis + cited sources"
+              ? "Live research + cited sources"
               : "Limited research mode"}
           </span>
         </div>

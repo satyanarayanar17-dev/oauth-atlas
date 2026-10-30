@@ -35,14 +35,9 @@ yarn-error.log*
 /.wrangler/
 /.sites-runtime/
 
-# Workspace scaffolding and publication archives
-/.agents/
-/.codex/
+# Local output
 /outputs/
 /work/
 
 # OS metadata
 .DS_Store
-
-# Safe example configuration
-!.dev.vars.example
