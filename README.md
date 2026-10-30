@@ -1,6 +1,6 @@
 # OAuth Atlas
 
-[Hosted preview](https://oauth-atlas-fieldguide.satyanarayanareddy-j.chatgpt.site) · [Source repository](https://github.com/satyanarayanar17-dev/oauth-atlas)
+[Hosted preview](https://oauth-atlas-fieldguide.satya-tethala.workers.dev) · [Source repository](https://github.com/satyanarayanar17-dev/oauth-atlas)
 
 Both links are public. Live research currently uses the key-free source scan; full agent synthesis still needs a model key and an end-to-end test.
 
@@ -64,3 +64,12 @@ React and TypeScript run on the supplied Vinext/Cloudflare Worker starter. There
 Public fetches can fail on browser-only docs or sign-in. Model citations are checked against retrieved URLs, but that does not prove every interpretation. Effort estimates are not measured setup results. Policies are a snapshot dated 29 October 2026. Browser storage, URL sharing, and the per-isolate request guard are take-home choices, not a production persistence or abuse-control system.
 
 The source fetcher checks public DNS and blocks private addresses, redirects, and oversized pages. DNS resolution cannot pin the later fetch address, so a production deployment still needs an egress boundary that prevents DNS rebinding.
+
+## Publish to Cloudflare Workers
+
+```sh
+npx wrangler login
+npm run deploy
+```
+
+`wrangler.deploy.json` builds and publishes the server and client assets together. The deployment uses the signed-in Cloudflare account and its workers.dev subdomain. Configure optional research-service secrets separately in that account; local secret files are not uploaded.

@@ -46,10 +46,7 @@ export async function POST(request: Request) {
     );
 
   // A small per-isolate guard is enough for the take-home. Use a durable limiter before public launch.
-  const client =
-    request.headers.get("oai-authenticated-user-id") ||
-    request.headers.get("cf-connecting-ip") ||
-    "local";
+  const client = request.headers.get("cf-connecting-ip") || "local";
   const now = Date.now();
   if (recentRequests.size > 500) recentRequests.clear();
   const attempts = (recentRequests.get(client) || []).filter(

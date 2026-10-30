@@ -73,3 +73,7 @@ Browser checks in the narrow in-app preview covered provider selection, Slack’
 The final automated check passed 24 tests and TypeScript checking; the production build completed. The OpenAI branch still needs a real-key end-to-end test before submission.
 
 After publication, the public site and research configuration returned HTTP 200 without sign-in. A hosted Linear investigation also returned HTTP 200 with a retrieved official source. Public browser rendering was checked. Full model synthesis remains untested.
+
+## Hosting update - 30 October 2026
+
+The public demo moved to https://oauth-atlas-fieldguide.satya-tethala.workers.dev. After new-subdomain HTTPS activation, the homepage and research configuration returned HTTP 200 with standard certificate validation. A live Notion investigation returned four sources. The account is permanent; this is not an expiring temporary preview. The deployment uses the same application and retains the current source-scan limitation.
