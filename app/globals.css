@@ -2275,3 +2275,22 @@ textarea::placeholder {
     color: #333;
   }
 }
+
+.guide-intent {
+  padding: 12px 15px;
+  margin: 14px 0;
+  border-radius: 6px;
+  background: #f3f6ed;
+  border: 1px solid #e0e7d7;
+}
+.guide-intent > span {
+  font-size: 8px;
+  letter-spacing: 1.2px;
+  color: #6b805b;
+}
+.guide-intent > p {
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 4px;
+  color: #4f6544;
+}

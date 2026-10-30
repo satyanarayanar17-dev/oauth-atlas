@@ -143,14 +143,14 @@ export default function ResearchDialog({
           <span>
             {mode === "agent"
               ? "AI synthesis + cited sources"
-              : "No model key configured"}
+              : "Limited research mode"}
           </span>
         </div>
         {mode === "source-scan" && (
           <p className="research-disclosure">
             This mode reads official pages live and extracts relevant passages.
             It leaves timing and approval conclusions unverified. Add a
-            server-side OpenAI key for full agent synthesis.
+            hosted model connection for full agent synthesis.
           </p>
         )}
         {error && (

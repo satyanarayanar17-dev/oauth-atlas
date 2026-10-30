@@ -34,6 +34,14 @@ Agents are useful for finding official documentation, comparing dated policies, 
 
 Live investigation should preserve a distinction between an agent-synthesized guide and a limited source scan. The latter can identify documentation and unknowns but must not invent approval times, supported scopes, or completed tests. Public webpages are evidence to inspect, not instructions for the research agent to execute.
 
+The deployed investigator uses a Cloudflare Workers AI binding, with Llama 3.3 70B producing structured JSON. This makes the full research path reproducible from the supplied Cloudflare configuration without obtaining a separate model API key. The normal local development server keeps the source-scan mode so browsing and retrieval remain usable without a cloud connection.
+
+The agent makes a bounded plan for additional documents before drafting the guide. Proposed URLs remain leads until fetched. A second model pass then reviews the draft against the same evidence, checking audience restrictions, scope accuracy, unsupported review claims, and advice unrelated to the intended action. This adds inference time and usage, but addresses omissions observed in the first single-pass drafts. It is a model-assisted revision, not independent factual validation.
+
+The server owns source identities, timestamps, action links, intended use, human handoffs, and validation notes; the model supplies the interpretation. Sample failures also informed narrow assembly rules: retain the initial scope list if the review adds more entries, replace unverified review or launch directives with a clarification gate, and drop webhook blockers when the stated intent does not request webhooks. These rules address observed mistakes; they do not establish that the original scopes or every remaining claim are correct.
+
+One assembly repair is allowed if the reviewed guide fails validation. Quota, inference, and unrecoverable validation failures remain visible instead of being reported as successful research. These checks establish provenance and structure, not semantic agreement between every sentence and its citation.
+
 ## Keeping the code understandable
 
 The implementation uses ordinary TypeScript data, a shared guide schema, small research modules, and a simple interface. Provider-specific guidance stays beside its sources instead of being buried in rendering code. Comments explain decisions where needed. The goal is code a reviewer can inspect and extend, not artificial signs of authorship.

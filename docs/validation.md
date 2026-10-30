@@ -70,10 +70,66 @@ On 29 October 2026, the actual local Worker returned a live Notion source scan w
 
 Browser checks in the narrow in-app preview covered provider selection, Slack’s Evidence tab, saving a checklist item and retaining it on reload, a live Linear investigation outside the curated library, and copying the generated share link. A Unicode share-link round trip is covered by automated tests. Full desktop and accessibility audits have not been completed.
 
-The final automated check passed 24 tests and TypeScript checking; the production build completed. The OpenAI branch still needs a real-key end-to-end test before submission.
+At that stage, 24 automated tests and TypeScript checking passed, and the production build completed. Later tests add inference and guide-assembly coverage. The optional OpenAI branch has not been exercised with a real key; it is no longer required by the hosted deployment.
 
-After publication, the public site and research configuration returned HTTP 200 without sign-in. A hosted Linear investigation also returned HTTP 200 with a retrieved official source. Public browser rendering was checked. Full model synthesis remains untested.
+After the initial publication, the public site and research configuration returned HTTP 200 without sign-in. A hosted Linear investigation also returned HTTP 200 with a retrieved official source. Public browser rendering was checked. That deployment ran source scans rather than full model synthesis.
 
 ## Hosting update - 30 October 2026
 
-The public demo moved to https://oauth-atlas-fieldguide.satya-tethala.workers.dev. After new-subdomain HTTPS activation, the homepage and research configuration returned HTTP 200 with standard certificate validation. A live Notion investigation returned four sources. The account is permanent; this is not an expiring temporary preview. The deployment uses the same application and retains the current source-scan limitation.
+The public demo moved to [Cloudflare Workers](https://oauth-atlas-fieldguide.satya-tethala.workers.dev). After new-subdomain HTTPS activation, the homepage and research configuration returned HTTP 200 with standard certificate validation. A live Notion investigation returned four sources. The account is permanent; this is not an expiring temporary preview. This first neutral-host deployment used the source-scan mode.
+
+## Workers AI upgrade - 30 October 2026
+
+The current deployment adds a Cloudflare Workers AI binding, using `@cf/meta/llama-3.3-70b-instruct-fp8-fast`. No separate model API key is required. The local development server still defaults to source scans; deployment through `wrangler.deploy.json` supplies the AI binding.
+
+An actual minimal JSON-schema inference probe succeeded with the 70B model. The initially selected 8B model rejected JSON-mode requests despite advertising the response-format field in its model schema. This was corrected by selecting a model explicitly listed in Cloudflare's [JSON-mode documentation](https://developers.cloudflare.com/workers-ai/features/json-mode/). A small successful probe establishes model availability and JSON output, not the complete app's research quality.
+
+Two complete production API investigations in the initial single-draft pipeline returned HTTP 200 in `agent` mode:
+
+| Submitted app               | Intended use                                                                                                                 | Observed duration | Generated result                                         |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------- | -------------------------------------------------------- |
+| Calendly, submitted by name | External customers connect accounts so a SaaS agent can read scheduled events; public production setup requested             | 30.4 seconds      | Five retrieved sources, six steps, four blocker remedies |
+| Figma, submitted by website | External customers connect accounts so an agent can read file contents; public production and draft/private limits requested | 29.6 seconds      | Four retrieved sources, six steps, four blocker remedies |
+
+These were fresh source retrieval and model synthesis, not prewritten library entries or source-scan fallbacks. Durations describe these runs, not a promised response time. Both results preserve the intended use and explicitly state that provider registration, consent, token exchange, and approval were not attempted.
+
+The hosted browser also completed the Calendly form-to-guide flow and displayed the intended use and research receipt. Its share link was copied through the interface and opened in a fresh Chrome tab; the generated guide and intended use were preserved after loading. This checks visible generation and snapshot sharing in addition to the API.
+
+The first Figma draft omitted important distinctions around draft, private, and public app availability. Subsequent drafts remained shallow in that area, and a Calendly draft included irrelevant webhook advice for a read-events use case. These are content-quality failures despite valid JSON and citations. Longer required fields and stronger synthesis instructions alone did not resolve them.
+
+The pipeline therefore added a second model pass that checks the draft against the retrieved documents before returning a revised guide. It explicitly checks audience-mode restrictions, unsupported review steps, irrelevant webhook advice, scope names, and credential constraints. Repetitive source excerpts are also deduplicated. Production checks of this two-pass revision returned HTTP 200 in `agent` mode:
+
+| Submitted app | Observed duration | Generated result                                 |
+| ------------- | ----------------- | ------------------------------------------------ |
+| Figma         | 63.6 seconds      | Four sources, six steps, four blocker remedies   |
+| Calendly      | 71.1 seconds      | Five sources, seven steps, four blocker remedies |
+
+The second pass improved the setup steps but introduced or retained other problems: Figma recommendations expanded into an example scope list, while Calendly retained irrelevant webhook advice and an unsupported mandatory review handoff. The Figma audience distinctions also still need careful human reading against the provider's current documentation. These observations show why model review cannot be treated as independent factual verification.
+
+Server-owned handoffs and targeted assembly rules were then added. If model review increases the number of recommended scopes, the initial list is retained as provisional and the disagreement is disclosed. Unverified review/launch directives become a clarification gate, and a relevance filter attempts to exclude unrequested webhook blockers. At that stage, 47 automated tests passed. These narrow guards reduce observed failures; they do not prove the retained scopes are minimal or every audience restriction is captured.
+
+Production verification of that guard revision, version `8223d62f-ee40-427e-a983-c035350692fd`, returned HTTP 200 in `agent` mode for both apps:
+
+| Submitted app | Observed duration | Generated result                                 |
+| ------------- | ----------------- | ------------------------------------------------ |
+| Calendly      | 77.8 seconds      | Five sources, seven steps, four blocker remedies |
+| Figma         | 78.6 seconds      | Five sources, six steps, four blocker remedies   |
+
+The exact requests, run metadata, and unchanged responses are preserved in [live generation snapshots](examples/README.md). Sample review accepted the core minimum scope recommendations for the requested actions, and both guides kept review durations unknown. Further inspection still found errors: the Figma audience sentence conflates provider review with end-user authorization; the Calendly PKCE step places the verifier in the wrong request, and its read-only intent still receives a webhook blocker. These snapshots establish functioning retrieval, synthesis, evidence review, and sharing—not fully accepted provider instructions.
+
+Source corrections after these captures standardize PKCE instructions, recognize explicitly negated webhook intent, and reject leaked metadata or malformed prose through validation and one repair attempt. The saved snapshots do not establish production behavior of that later code. Final test totals and deployment checks should be read alongside their exact revision; the recorded durations are observations, not response-time guarantees.
+
+Mock inference tests cover the requested JSON configuration, object/string response parsing, malformed output, quota and capacity errors, timeout cleanup, and absence of automatic retries in the inference wrapper. Guide-assembly tests cover intended use, source references, evidence demotion, server-owned source and validation metadata, malformed steps, and evidence-derived action URLs. Two assembly issues were corrected during those checks: null steps now fail safely, and model-supplied action links cannot survive without retrieved source support.
+
+These validations establish software boundaries. They do not establish factual entailment for every generated claim, authenticated provider setup, consent, token behavior, or completed provider review.
+
+
+## Final submission checks
+
+The corrected pipeline generated another Figma guide over the public API with HTTP 200 in 62.0 seconds on version `ba0ad0bc-39df-4523-b418-2045bb7552dd`: five fetched sources, five steps, four blockers, and `file_content:read`. It described public review, private team/organization limits, and draft testing with the creator/admins. Provider waiting remained unknown. The [raw response](examples/final-figma-response.json) and [request metadata](examples/final-figma-request-meta.json) are preserved.
+
+This check confirmed complete generation after the PKCE, negated-webhook, and prose-validation corrections. It also exposed a remaining ownership problem: the model assigned registration/configuration steps to the agent. The final presentation now keeps authenticated setup with the developer, supplies server-owned research capabilities and human handoffs, and removes duplicate readiness gates. A dedicated test covers that boundary; the software does not have provider-login or app-creation tools.
+
+The final suite passes **50 automated tests**, TypeScript checking, and the production build. The UI labels generated citations as “Source cited · review interpretation.” Public generation and sharing were exercised; the later ownership projection is covered by automated and recorded-response checks. This is still a draft research assistant, not a completed provider setup or an independent factual verifier.
+
+The standard PKCE correction follows [RFC 7636 sections 4.3–4.5](https://www.rfc-editor.org/rfc/rfc7636): the challenge goes to the authorization endpoint, while the verifier belongs in the token request. The correction does not claim that a token exchange was run. No secrets were found by the submission's basic credential-pattern check; ignored local credentials and build output are excluded from the repository.

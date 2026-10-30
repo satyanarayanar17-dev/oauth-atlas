@@ -49,6 +49,7 @@ export interface Guide {
   updatedAt: string;
   generated?: boolean;
   researchMode?: "agent" | "source-scan";
+  intent?: string;
 }
 
 export interface ResearchTrace {

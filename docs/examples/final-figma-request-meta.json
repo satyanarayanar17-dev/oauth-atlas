@@ -1,0 +1,9 @@
+{
+  "request": {
+    "query": "https://developers.figma.com/docs/rest-api/oauth-apps/",
+    "intent": "External customers connect their own Figma accounts so my agent can read file JSON contents using GET /v1/files/{key}. No comments, writes, or dev resources. Choose the minimum scope and explain the public production path plus draft and private audience restrictions."
+  },
+  "status": 200,
+  "seconds": 62.0,
+  "version": "ba0ad0bc-39df-4523-b418-2045bb7552dd"
+}

@@ -5,6 +5,7 @@ export function guideMarkdown(guide: Guide): string {
   return [
     `# ${guide.name} OAuth field guide`,
     guide.summary,
+    guide.intent ? `## Intended use\n${guide.intent}` : "",
     `Checked: ${guide.updatedAt} · ${guide.researchMode ?? "curated research"}`,
     `## The launch path\n- Hands-on work: ${guide.setupTime}\n- Provider wait: ${guide.waitTime}\n- ${guide.timeNote}\n- ${guide.review}`,
     `## Scope decisions\n${guide.scopeNote}\n${guide.recommendedScopes.map((s) => `- ${s}`).join("\n")}`,

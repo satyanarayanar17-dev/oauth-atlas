@@ -182,13 +182,26 @@ export function parsePage(html: string, url: string): ResearchPage {
     .trim()
     .slice(0, 45_000);
   const links = new Set<string>();
-  for (const match of cleaned.matchAll(
+  const linkMarkup = html.replace(
+    /<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi,
+    " ",
+  );
+  for (const match of linkMarkup.matchAll(
     /<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>/gi,
   )) {
     try {
       links.add(publicUrl(decodeEntities(match[1]), url).href);
     } catch {
       /* Ignore non-public navigation links. */
+    }
+  }
+  for (const match of cleaned.matchAll(
+    /\[[^\]]*\]\(([^\s)]+)(?:\s+"[^"]*")?\)/g,
+  )) {
+    try {
+      links.add(publicUrl(match[1], url).href);
+    } catch {
+      /* Ignore non-web Markdown links. */
     }
   }
   return { url, title: title.slice(0, 160), text, links: [...links] };
@@ -206,7 +219,7 @@ export function documentationLinks(page: ResearchPage): string[] {
         url.hostname === ownHost || url.hostname.endsWith(`.${ownHost}`);
       return (
         belongsToProvider &&
-        /oauth|authentication|authorization|developer|integrations|docs/i.test(
+        /oauth|authentication|authorization|developer|integrations|docs|scope|review|approval/i.test(
           url.href,
         ) &&
         !/\/blog\/|\/login|\/signin|logout|\.(png|jpg|pdf|zip|mp4)(?:\?|$)/i.test(

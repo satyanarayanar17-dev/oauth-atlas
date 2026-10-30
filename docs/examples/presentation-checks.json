@@ -1,0 +1,25 @@
+{
+  "kind": "local assembly checks against captured production responses",
+  "results": [
+    {
+      "provider": "Figma",
+      "inputCapture": "final-figma-response.json",
+      "checksPassed": true,
+      "steps": 4,
+      "blockers": 4,
+      "scopes": [
+        "file_content:read"
+      ]
+    },
+    {
+      "provider": "Calendly",
+      "inputCapture": "calendly-response.json",
+      "checksPassed": true,
+      "steps": 7,
+      "blockers": 3,
+      "scopes": [
+        "scheduled_events:read"
+      ]
+    }
+  ]
+}

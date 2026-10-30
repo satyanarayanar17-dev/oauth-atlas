@@ -1,12 +1,13 @@
 import type { Guide, ResearchTrace, GuideStep } from "../types";
-import { matchProvider } from "./providers";
+import { matchProvider } from "./providers.ts";
+import { discoverProvider } from "./discovery.ts";
 import {
   documentationLinks,
   fetchPage,
   publicUrl,
   ResearchError,
   type ResearchPage,
-} from "./sources";
+} from "./sources.ts";
 
 export interface ScanResult {
   guide: Guide;
@@ -149,13 +150,25 @@ export function scanGuide(
   };
 }
 
-export async function scanSources(query: string): Promise<ScanResult> {
+export async function scanSources(
+  query: string,
+  lead?: { name: string; domain: string; urls: string[] },
+): Promise<ScanResult> {
   const trace: ResearchTrace[] = [];
   const provider = matchProvider(query);
   let startingUrls: string[];
   let name: string;
   let domain: string;
-  if (provider) {
+  if (lead) {
+    startingUrls = lead.urls;
+    name = lead.name;
+    domain = lead.domain;
+    trace.push({
+      label: "Research lead",
+      detail: `Investigating the supplied documentation leads for ${name}; provider identity and OAuth claims must be checked against retrieved pages.`,
+      status: "done",
+    });
+  } else if (provider) {
     startingUrls = provider.docs;
     name = provider.name;
     domain = provider.domain;
@@ -168,21 +181,33 @@ export async function scanSources(query: string): Promise<ScanResult> {
     const looksLikeUrl =
       /^https?:\/\//i.test(query) ||
       /^[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:[/?#].*)?$/i.test(query);
-    if (!looksLikeUrl)
-      throw new ResearchError(
-        "This app name is unfamiliar. Submit its official website or public OAuth documentation URL so the investigator can identify the right provider.",
+    if (!looksLikeUrl) {
+      const found = await discoverProvider(query);
+      if (!found)
+        throw new ResearchError(
+          "The provider could not be identified from its name. Try its official website or OAuth documentation URL.",
+        );
+      startingUrls = found.urls;
+      name = found.name;
+      domain = found.domain;
+      trace.push({
+        label: "Name discovery",
+        detail: `Public brand metadata supplied ${domain} as a lead for ${name}. Metadata does not establish OAuth support; the following sources are fetched live.`,
+        status: "done",
+      });
+    } else {
+      const url = publicUrl(
+        /^https?:\/\//i.test(query) ? query : `https://${query}`,
       );
-    const url = publicUrl(
-      /^https?:\/\//i.test(query) ? query : `https://${query}`,
-    );
-    startingUrls = [url.href];
-    domain = url.hostname.replace(/^www\./, "");
-    name = domain;
-    trace.push({
-      label: "Website received",
-      detail: `Investigating ${domain}. The submitted domain is a research lead, not a verified provider identity.`,
-      status: "done",
-    });
+      startingUrls = [url.href];
+      domain = url.hostname.replace(/^www\./, "");
+      name = domain;
+      trace.push({
+        label: "Website received",
+        detail: `Investigating ${domain}. The submitted domain is a research lead, not a verified provider identity.`,
+        status: "done",
+      });
+    }
   }
   const pages: ResearchPage[] = [];
   const seen = new Set<string>();

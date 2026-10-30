@@ -1,0 +1,11 @@
+{
+  "app": "figma",
+  "status": 200,
+  "seconds": 78.6,
+  "bytes": 7647,
+  "version": "8223d62f-ee40-427e-a983-c035350692fd",
+  "request": {
+    "query": "https://developers.figma.com/docs/rest-api/oauth-apps/",
+    "intent": "External customers connect their own Figma accounts so my agent can read file JSON contents using GET /v1/files/{key}. No comments, writes, or dev resources. Choose the minimum scope and explain the public production path plus draft and private audience restrictions."
+  }
+}

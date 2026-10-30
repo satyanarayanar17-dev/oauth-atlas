@@ -1,5 +1,7 @@
 import { env } from "cloudflare:workers";
 import { investigate } from "@/lib/research/agent";
+import { investigateWithWorker } from "@/lib/research/worker-agent";
+import type { WorkersModel } from "@/lib/research/inference";
 import { publicUrl, ResearchError } from "@/lib/research/sources";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +15,10 @@ const recentRequests = new Map<string, number[]>();
 function config() {
   const vars = env as unknown as Record<string, unknown>;
   return {
+    ai:
+      vars.AI && typeof (vars.AI as WorkersModel).run === "function"
+        ? (vars.AI as WorkersModel)
+        : undefined,
     apiKey:
       typeof vars.OPENAI_API_KEY === "string" ? vars.OPENAI_API_KEY : undefined,
     model:
@@ -22,7 +28,7 @@ function config() {
 
 export async function GET() {
   return Response.json(
-    { mode: config().apiKey ? "agent" : "source-scan" },
+    { mode: config().ai || config().apiKey ? "agent" : "source-scan" },
     { headers },
   );
 }
@@ -87,7 +93,10 @@ export async function POST(request: Request) {
         : "";
     if (/^[a-z]+:\/\//i.test(query)) publicUrl(query);
     recentRequests.set(client, [...attempts, now]);
-    const result = await investigate(query, intent, config());
+    const runtime = config();
+    const result = runtime.ai
+      ? await investigateWithWorker(query, intent, runtime.ai)
+      : await investigate(query, intent, runtime);
     return Response.json(
       { guide: result.guide, trace: result.trace },
       { headers },

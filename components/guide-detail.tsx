@@ -167,6 +167,12 @@ export default function GuideDetail({
         </span>
       </div>
       <p className="guide-summary">{guide.summary}</p>
+      {guide.intent && (
+        <div className="guide-intent">
+          <span>GUIDE FOR THIS USE CASE</span>
+          <p>{guide.intent}</p>
+        </div>
+      )}
       <div className="guide-meta">
         <span>
           <ShieldCheck size={14} />
@@ -210,7 +216,7 @@ export default function GuideDetail({
                 </div>
                 <strong>{guide.setupTime}</strong>
                 <span>
-                  {guide.difficulty === "Needs investigation"
+                  {guide.researchMode === "source-scan"
                     ? "Awaiting evidence"
                     : "Planning estimate"}
                 </span>
@@ -360,7 +366,9 @@ export default function GuideDetail({
                         {step.evidence === "documented"
                           ? guide.researchMode === "source-scan"
                             ? "Source retrieved · identity not verified"
-                            : "Source-backed guidance"
+                            : guide.generated
+                              ? "Source cited · review interpretation"
+                              : "Source-backed guidance"
                           : step.evidence === "estimate"
                             ? "Planning estimate"
                             : "Needs verification"}

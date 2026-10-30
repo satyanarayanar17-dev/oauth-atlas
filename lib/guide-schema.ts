@@ -80,8 +80,18 @@ export const guideSchema = z
     updatedAt: shortText,
     generated: z.boolean().optional(),
     researchMode: z.enum(["agent", "source-scan"]).optional(),
+    intent: z.string().max(1000).optional(),
   })
   .superRefine((guide, context) => {
+    const prose = [guide.summary, guide.review, guide.scopeNote,
+      ...guide.steps.map((step) => step.detail),
+      ...guide.blockers.map((blocker) => `${blocker.detail} ${blocker.resolution}`)];
+    if (prose.some((value) => /['"](?:sourceIds|owner|evidence|steps)['"]\s*:/.test(value))) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Generated prose contains leaked response metadata",
+      });
+    }
     const ids = new Set(guide.sources.map((source) => source.id));
     const steps = new Set(guide.steps.map((step) => step.id));
     if (

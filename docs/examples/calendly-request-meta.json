@@ -1,0 +1,11 @@
+{
+  "app": "calendly",
+  "status": 200,
+  "seconds": 77.8,
+  "bytes": 8304,
+  "version": "8223d62f-ee40-427e-a983-c035350692fd",
+  "request": {
+    "query": "Calendly",
+    "intent": "External customers connect their own Calendly account so my SaaS agent can read scheduled events. I use read endpoints only, without webhooks. Explain the public production setup path and any approval uncertainty."
+  }
+}
